@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: "mysql"
+    image: db
+    build:
+      context: .
+      target: build2
+    environment: 
+      MYSQL_RANDOM_ROOT_PASSWORD: "secret"
+      MYSQL_DATABASE: "db"
+      MYSQL_USER: "tester"
+      MYSQL_PASSWORD: "secret"
+      TZ: "Asia/Almaty"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_dump:/var/lib/mysql
+      # - ../user/repository/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      
+  api:
+    container_name: "api"
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_dump:
+
+# version: '3.1'
+
+# services:
+#   redis:
+#     image: redis
+#     ports:
+#       - 127.0.0.1:6379:6379
